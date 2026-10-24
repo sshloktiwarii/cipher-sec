@@ -1,5 +1,6 @@
 # Binaries
 foundry-sentinel
+cipher-sec
 *.exe
 *.test
 

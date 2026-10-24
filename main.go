@@ -9,11 +9,13 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
 	"sync/atomic"
 	"syscall"
@@ -202,6 +204,7 @@ func getEnv(k, def string) string {
 
 func main() {
 	port := flag.String("port", getEnv("PORT", "8079"), "Sentinel HTTP listen port")
+	socket := flag.String("socket", getEnv("SOCKET_PATH", ""), "Unix domain socket path (e.g. /tmp/cipher/sec.sock)")
 	target := flag.String("target", getEnv("TARGET_URL", "http://localhost:8080"), "Target Foundry Router URL")
 	telemetry := flag.String("telemetry", getEnv("TELEMETRY_ENDPOINT", "http://localhost:8082/ingest"), "Telemetry ingestion endpoint")
 	flag.Parse()
@@ -226,6 +229,20 @@ func main() {
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	if *socket != "" {
+		_ = os.MkdirAll(filepath.Dir(*socket), 0755)
+		_ = os.Remove(*socket)
+		unixListener, err := net.Listen("unix", *socket)
+		if err == nil {
+			go func() {
+				log.Printf("[INIT] Foundry Sentinel listening on Unix Domain Socket %s", *socket)
+				_ = server.Serve(unixListener)
+			}()
+		} else {
+			log.Printf("[WARN] Failed to bind unix domain socket: %v", err)
+		}
+	}
 
 	go func() {
 		log.Printf("[INIT] Foundry Sentinel listening on :%s -> Forwarding to %s", cfg.Port, cfg.TargetURL)
