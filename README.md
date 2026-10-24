@@ -4,6 +4,8 @@ High-performance semantic firewall and credential redaction proxy.
 
 Written in pure Go. Evaluates incoming prompts and outbound model responses for credential leakage (Shannon entropy analysis and regex signatures) and destructive commands, operating with sub-2ms latency.
 
+Looking for a plain-English, non-technical summary? See [EXPLAINER.md](EXPLAINER.md).
+
 ---
 
 ## Detection Capabilities
