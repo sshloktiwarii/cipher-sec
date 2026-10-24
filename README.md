@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/header.svg" width="100%" alt="Cipher Header Banner" />
+</p>
+
 # cipher-sec
 
 High-performance semantic firewall and credential redaction proxy.
