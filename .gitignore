@@ -1,0 +1,9 @@
+# Binaries
+foundry-sentinel
+*.exe
+*.test
+
+# Environment & OS
+.env
+.env.*
+.DS_Store
