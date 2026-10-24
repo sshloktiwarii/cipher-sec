@@ -1,4 +1,4 @@
-# Foundry Sentinel: The Zero-Trust Semantic Firewall
+# cipher-sec: The Zero-Trust Semantic Firewall
 
 A high-performance security interceptor and semantic reverse proxy written in Go that guards upstream LLMs and execution engines against hallucinated destructive actions and credential leakage.
 
@@ -9,12 +9,12 @@ A high-performance security interceptor and semantic reverse proxy written in Go
 2. **Shannon Entropy & Regex Secret Redaction**:
    - Matches known API key formats (AWS `AKIA...`, OpenAI `sk-...`, GitHub `ghp_...`, Slack, JWTs).
    - Computes Shannon entropy on string tokens; high-entropy tokens are automatically sanitized.
-   - Replaces leaked tokens with `[REDACTED_BY_SENTINEL]`.
+   - Replaces leaked tokens with `[REDACTED_BY_CIPHER_SEC]`.
 3. **Bi-Directional Inspection**:
    - Inspects inbound requests to protect sandboxes.
    - Inspects outbound model responses to prevent LLMs from emitting sensitive keys to clients.
 4. **Telemetry Ingestion Integration**:
-   - Forwards threat alerts directly to `foundry-pulse` (`:8082/ingest`).
+   - Forwards threat alerts directly to `cipher-log` (`:8082/ingest`).
 
 ## Running Sentinel
 ```bash
