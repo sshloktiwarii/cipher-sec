@@ -30,7 +30,7 @@ var (
 	}
 )
 
-const RedactedPlaceholder = "[REDACTED_BY_SENTINEL]"
+const RedactedPlaceholder = "[REDACTED_BY_CIPHER_SEC]"
 
 // InspectAndSanitize scans the payload for destructive commands and leaked credentials
 func InspectAndSanitize(payload []byte) (sanitized []byte, blocked bool, reason string) {

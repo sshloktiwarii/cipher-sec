@@ -76,12 +76,32 @@ func (sp *SentinelProxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(map[string]interface{}{
-			"service":          "foundry-sentinel",
+			"service":          "cipher-sec",
 			"status":           "active",
 			"scanned_requests": atomic.LoadUint64(&sp.scannedRequests),
 			"blocked_threats":  atomic.LoadUint64(&sp.blockedRequests),
 			"target_upstream":  sp.targetURL.String(),
 			"timestamp":        time.Now().UTC().Format(time.RFC3339),
+		})
+		return
+	}
+
+	// Direct Inspection Endpoint
+	if r.URL.Path == "/inspect" && r.Method == http.MethodPost {
+		bodyBytes, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 5*1024*1024))
+		if err != nil {
+			http.Error(w, `{"error":"Request body too large"}`, http.StatusBadRequest)
+			return
+		}
+		_ = r.Body.Close()
+
+		sanitized, blocked, reason := InspectAndSanitize(bodyBytes)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"sanitized": string(sanitized),
+			"blocked":   blocked,
+			"reason":    reason,
+			"redacted":  bytes.Contains(sanitized, []byte(RedactedPlaceholder)),
 		})
 		return
 	}
